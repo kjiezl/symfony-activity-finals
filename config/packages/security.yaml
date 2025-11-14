@@ -4,22 +4,23 @@ security:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        app_user_provider:
-            entity:
-                class: App\Entity\User
-                property: email
+        in_memory:
+            memory:
+                users:
+                    admin:
+                        password: '$2y$13$5qDr6l0Y6FIGjpj4N1G2q.JS2hCrILczDyg2lkxposLHFog.j.ADW'
+                        roles: ['ROLE_ADMIN']
+                    user:
+                        password: '$2y$13$iU.IwhBDPqNNAfpzrJ8CrO2sSPNx5Rdk9R2Gx9rHKYM5lqZg/5cWe'
+                        roles: ['ROLE_USER']
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             lazy: true
-            provider: app_user_provider
-            custom_authenticators:
-                - App\Security\LoginFormAuthenticator
-            logout:
-                path: app_logout
-                target: app_login
+            http_basic: ~
+            provider: in_memory
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -30,7 +31,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/dashboard, roles: ROLE_ADMIN }
+        - { path: ^/dashboard, roles: [ROLE_ADMIN, ROLE_USER] }
 
 when@test:
     security:
